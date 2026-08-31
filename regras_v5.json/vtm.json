@@ -1,0 +1,62 @@
+{
+  "sistema": "Vampire: The Masquerade 5th Edition (V5)",
+  "dados": {
+    "tipo": "d10",
+    "sucesso": "6 a 10",
+    "falha": "1 a 5",
+    "critico_normal": "Dois dados com valor 10 valem 4 sucessos no total."
+  },
+  "personagem": {
+    "atributos": {
+      "fisicos": ["Força", "Destreza", "Vigor"],
+      "sociais": ["Carisma", "Manipulação", "Autocontrole"],
+      "mentais": ["Inteligência", "Raciocínio", "Determinação"]
+    },
+    "habilidades": {
+      "fisicas": [
+        "Armas brancas", "Armas de fogo", "Atletismo", "Briga", 
+        "Condução", "Furtividade", "Ladroagem", "Ofícios", "Sobrevivência"
+      ],
+      "sociais": [
+        "Empatia com animais", "Etiqueta", "Intimidação", "Liderança", 
+        "Manha", "Performance", "Persuasão", "Sagacidade", "Subterfúgio"
+      ],
+      "mentais": [
+        "Ciência", "Erudição", "Finanças", "Investigação", "Medicina", 
+        "Ocultismo", "Percepção", "Política", "Tecnologia"
+      ]
+    }
+  },
+  "mecanicas": {
+    "rolagem_padrao": {
+      "descricao": "O jogador rola uma quantidade de dados igual a (Atributo + Habilidade).",
+      "exemplo": "Força (3) + Briga (2) = 5 dados."
+    },
+    "fome": {
+      "nivel_minimo": 0,
+      "nivel_maximo": 5,
+      "regra_substituicao": "Substitui os dados normais da parada de dados por 'Dados de Fome' (vermelhos) até o limite do nível de Fome atual.",
+      "critico_baguncado": {
+        "condicao": "Se a rolagem tiver um Acerto Crítico (dois 10s) E pelo menos um desses '10' cair em um Dado de Fome.",
+        "efeito": "A ação é um sucesso, mas a Besta assume o controle (violência desnecessária, quebra da Máscara, etc)."
+      },
+      "falha_bestial": {
+        "condicao": "Se a rolagem falhar (não alcançar os sucessos necessários) E pelo menos um '1' cair em um Dado de Fome.",
+        "efeito": "A Besta age através do personagem, causando compulsão ou problemas graves."
+      }
+    },
+    "forca_de_vontade": {
+      "regra_re-rolagem": "O jogador pode gastar 1 ponto de Força de Vontade para re-rolar até 3 dados normais.",
+      "restricao": "DADOS DE FOME NUNCA PODEM SER RE-ROLADOS."
+    },
+    "humanidade_e_remorso": {
+      "maculas": "Quando o vampiro age contra suas convicções, ele ganha Máculas (Stains).",
+      "teste_de_remorso": {
+        "quando_ocorre": "No final da sessão, se o personagem tiver 1 ou mais Máculas.",
+        "parada_de_dados": "Rola-se uma quantidade de dados igual a (10 - Humanidade atual - Máculas). Mínimo de 1 dado.",
+        "resultado_sucesso": "Se obtiver pelo menos 1 sucesso (6 ou mais): O personagem sente culpa. Apaga todas as Máculas e mantém a Humanidade.",
+        "resultado_falha": "Se não obtiver nenhum sucesso: A Besta venceu dessa vez. O personagem perde 1 ponto de Humanidade e apaga as Máculas."
+      }
+    }
+  }
+}

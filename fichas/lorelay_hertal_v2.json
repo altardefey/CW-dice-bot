@@ -1,0 +1,67 @@
+{
+    "nome": "Lorelay Hertal",
+    "cla": "Tremere",
+    "atributos": {
+        "fisico": {
+            "forca": 1,
+            "destreza": 2,
+            "vigor": 2
+        },
+        "social": {
+            "carisma": 3,
+            "manipulacao": 3,
+            "autocontrole": 2
+        },
+        "mental": {
+            "inteligencia": 4,
+            "raciocinio": 3,
+            "determinacao": 2
+        }
+    },
+    "status": {
+        "vida": {
+            "total": 5,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "forca_de_vontade": {
+            "total": 4,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "humanidade": {
+            "total": 7,
+            "manchas": 0
+        },
+        "fome": 2
+    },
+    "habilidades": {
+        "armas_brancas": 0,
+        "armas_de_fogo": 0,
+        "atletismo": 0,
+        "briga": 0,
+        "conducao": 0,
+        "furtividade": 3,
+        "ladroagem": 0,
+        "oficios": 2,
+        "sobrevivencia": 0,
+        "empatia_com_animais": 1,
+        "etiqueta": 2,
+        "intimidacao": 0,
+        "lideranca": 0,
+        "manha": 0,
+        "performance": 4,
+        "persuasao": 2,
+        "sagacidade": 1,
+        "subterfugio": 0,
+        "ciencia": 0,
+        "erudicao": 3,
+        "financas": 1,
+        "investigacao": 0,
+        "medicina": 0,
+        "ocultismo": 3,
+        "percepcao": 0,
+        "politica": 0,
+        "tecnologia": 0
+    }
+}

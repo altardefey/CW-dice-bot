@@ -1,0 +1,67 @@
+{
+    "nome": "Aurik",
+    "cla": "Nosferatu",
+    "atributos": {
+        "fisico": {
+            "forca": 3,
+            "destreza": 3,
+            "vigor": 3
+        },
+        "social": {
+            "carisma": 1,
+            "manipulacao": 2,
+            "autocontrole": 2
+        },
+        "mental": {
+            "inteligencia": 2,
+            "raciocinio": 2,
+            "determinacao": 4
+        }
+    },
+    "status": {
+        "vida": {
+            "total": 6,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "forca_de_vontade": {
+            "total": 6,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "humanidade": {
+            "total": 7,
+            "manchas": 0
+        },
+        "fome": 2
+    },
+    "habilidades": {
+        "armas_brancas": 1,
+        "armas_de_fogo": 3,
+        "atletismo": 3,
+        "briga": 3,
+        "conducao": 1,
+        "furtividade": 2,
+        "ladroagem": 0,
+        "oficios": 0,
+        "sobrevivencia": 2,
+        "empatia_com_animais": 0,
+        "etiqueta": 0,
+        "intimidacao": 0,
+        "lideranca": 0,
+        "manha": 0,
+        "performance": 0,
+        "persuasao": 0,
+        "sagacidade": 0,
+        "subterfugio": 0,
+        "ciencia": 0,
+        "erudicao": 0,
+        "financas": 0,
+        "investigacao": 1,
+        "medicina": 0,
+        "ocultismo": 4,
+        "percepcao": 2,
+        "politica": 0,
+        "tecnologia": 0
+    }
+}

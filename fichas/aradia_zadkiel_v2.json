@@ -1,0 +1,94 @@
+{
+    "nome": "Aradia Zadkiel",
+    "nome_verdadeiro": "Olwyn Deena Evans",
+    "cla": null,
+    "atributos": {
+        "fisico": {
+            "forca": 1,
+            "destreza": 3,
+            "vigor": 2
+        },
+        "social": {
+            "carisma": 3,
+            "manipulacao": 2,
+            "autocontrole": 2
+        },
+        "mental": {
+            "inteligencia": 4,
+            "raciocinio": 2,
+            "determinacao": 3
+        }
+    },
+    "status": {
+        "vida": {
+            "total": 5,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "forca_de_vontade": {
+            "total": 6,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "humanidade": {
+            "total": 7,
+            "manchas": 0
+        },
+        "fome": 2
+    },
+    "habilidades": {
+        "armas_brancas": 0,
+        "armas_de_fogo": 1,
+        "atletismo": 0,
+        "briga": 0,
+        "conducao": 1,
+        "furtividade": 2,
+        "ladroagem": 0,
+        "oficios": 0,
+        "sobrevivencia": 0,
+        "empatia_com_animais": 0,
+        "etiqueta": 0,
+        "intimidacao": 0,
+        "lideranca": 1,
+        "manha": 0,
+        "performance": 0,
+        "persuasao": 3,
+        "sagacidade": 3,
+        "subterfugio": 0,
+        "ciencia": 1,
+        "erudicao": 0,
+        "financas": 0,
+        "investigacao": 2,
+        "medicina": 4,
+        "ocultismo": 2,
+        "percepcao": 3,
+        "politica": 0,
+        "tecnologia": 0
+    },
+    "disciplinas": {
+        "fortitude": {
+            "nivel": 4,
+            "poderes": [
+                "resiliência",
+                "vitae revigorante",
+                "valeren",
+                "fortalecer a fachada inferior"
+            ]
+        },
+        "auspicios": {
+            "nivel": 3,
+            "poderes": [
+                "sentidos aguçados",
+                "panacéia",
+                "sondar a alma"
+            ]
+        },
+        "dominar": {
+            "nivel": 2,
+            "poderes": [
+                "nuvem na memória",
+                "hipnotizar"
+            ]
+        }
+    }
+}

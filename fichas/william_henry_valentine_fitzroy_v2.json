@@ -1,0 +1,67 @@
+{
+    "nome": "William Henry Valentine Fitzroy",
+    "cla": "Brujah",
+    "atributos": {
+        "fisico": {
+            "forca": 4,
+            "destreza": 3,
+            "vigor": 2
+        },
+        "social": {
+            "carisma": 3,
+            "manipulacao": 2,
+            "autocontrole": 1
+        },
+        "mental": {
+            "inteligencia": 2,
+            "raciocinio": 2,
+            "determinacao": 3
+        }
+    },
+    "status": {
+        "vida": {
+            "total": 5,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "forca_de_vontade": {
+            "total": 4,
+            "dano_superficial": 0,
+            "dano_agravado": 0
+        },
+        "humanidade": {
+            "total": 4,
+            "manchas": 0
+        },
+        "fome": 2
+    },
+    "habilidades": {
+        "armas_brancas": 1,
+        "armas_de_fogo": 2,
+        "atletismo": 2,
+        "briga": 3,
+        "conducao": 1,
+        "furtividade": 2,
+        "ladroagem": 1,
+        "oficios": 0,
+        "sobrevivencia": 0,
+        "empatia_com_animais": 2,
+        "etiqueta": 2,
+        "intimidacao": 1,
+        "lideranca": 1,
+        "manha": 1,
+        "performance": 1,
+        "persuasao": 1,
+        "sagacidade": 1,
+        "subterfugio": 2,
+        "ciencia": 0,
+        "erudicao": 0,
+        "financas": 2,
+        "investigacao": 1,
+        "medicina": 0,
+        "ocultismo": 0,
+        "percepcao": 2,
+        "politica": 0,
+        "tecnologia": 0
+    }
+}

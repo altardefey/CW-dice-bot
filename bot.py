@@ -6,16 +6,15 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 import fichas as fichas_mod
 from usuarios import ligar_ficha, obter_usuario, registrar_usuario
 from v5_dice import (
     HUNGER_MAX,
-    HUNGER_MIN,
     formatar_remorso,
     formatar_rouse,
-    formatar_vontade,
     roll_pool,
     roll_rouse,
     roll_simple,
@@ -34,15 +33,18 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 
 AJUDA = (
-    "Bot de dados de Vampire: The Masquerade 5a Edicao.\n\n"
-    "Primeiro ligue sua ficha:\n"
-    "/ficha <nome>\n\n"
-    "/roll <parada> <fome>  - rolagem normal\n"
-    "/roll remorso  - teste de remorso (altera a ficha)\n"
-    "/roll check  - rouse check (altera a ficha)\n"
-    "/macula  - adiciona 1 macula de Humanidade\n"
-    "/vontade  - adiciona 1 mancha de Forca de Vontade\n"
-    "/remover vontade  - apaga as manchas de Forca de Vontade"
+    "Bot de dados de Vampire: The Masquerade 5a Edição pro melhor RPG de VTM (Crimson Waltz).\n\n"
+    "/ficha  - Mostra a ficha ligada ao seu ID\n"
+    "/ficha ligar <nome>  - Liga uma ficha ao seu ID\n"
+    "/roll <parada>\n"
+    "/roll remorso\n"
+    "/roll check - Faz um rouse check.\n"
+    "/macula - Mostra sua humanidade e manchas.\n"
+    "/vida superficial - Adiciona dano superficial na vida.\n"
+    "/vida agravado - Adiciona dano agravado na vida.\n"
+    "/vontade superficial - Adiciona dano superficial na força de vontade.\n"
+    "/vontade agravado - Adiciona dano agravado na força de vontade.\n"
+    "/remover vontade - Remove todo o dano da força de vontade.\n"
 )
 
 
@@ -58,8 +60,8 @@ def _carregar_ficha_do_usuario(user_id: int) -> tuple[dict, Path] | str:
     ref = (registro or {}).get("ficha")
     if not ref:
         return (
-            "Voce ainda nao tem uma ficha ligada.\n"
-            "Use /ficha <nome>\n\n" + _lista_fichas_txt()
+            "Você ainda não tem uma ficha ligada.\n"
+            "Use /ficha ligar <nome>\n\n" + _lista_fichas_txt()
         )
     caminho = fichas_mod.resolver_ficha(str(ref))
     if caminho is None:
@@ -67,14 +69,29 @@ def _carregar_ficha_do_usuario(user_id: int) -> tuple[dict, Path] | str:
         if not caminho.exists():
             return (
                 "A ficha ligada nao foi encontrada.\n"
-                "Use /ficha <nome>\n\n" + _lista_fichas_txt()
+                "Use /ficha ligar <nome>\n\n" + _lista_fichas_txt()
             )
     return fichas_mod.carregar(caminho), caminho
 
 
-async def _responder(update: Update, texto: str) -> None:
+async def _responder(
+    update: Update,
+    texto: str,
+    parse_mode: str | None = None,
+) -> None:
     if update.message is not None:
-        await update.message.reply_text(texto)
+        await update.message.reply_text(texto, parse_mode=parse_mode)
+
+
+def _tipo_dano(args: list[str]) -> str | None:
+    if not args:
+        return None
+    tipo = args[0].lower()
+    if tipo in {"superficial", "superf", "s"}:
+        return "superficial"
+    if tipo in {"agravado", "agravada", "a"}:
+        return "agravado"
+    return None
 
 
 async def registrar_uso(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -89,29 +106,44 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await start(update, context)
 
 
+async def _ligar_ficha(update: Update, user, referencia: str) -> None:
+    if not referencia.strip():
+        await _responder(
+            update,
+            "Uso: /ficha ligar <nome>\nExemplo: /ficha ligar Janja",
+        )
+        return
+    caminho = fichas_mod.resolver_ficha(referencia)
+    if caminho is None:
+        await _responder(update, "Ficha não encontrada.")
+        return
+    fichas_mod.carregar(caminho)
+    ligar_ficha(user.id, caminho.stem, user)
+    await _responder(update, "Ficha ligada.")
+
+
 async def cmd_ficha(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     if user is None:
         return
     args = context.args or []
-    if not args:
-        await _responder(
-            update,
-            "Uso: /ficha <nome>\nExemplo: /ficha aurik\n\n" + _lista_fichas_txt(),
-        )
+    if args and args[0].lower() == "ligar":
+        await _ligar_ficha(update, user, " ".join(args[1:]))
         return
-    referencia = " ".join(args)
-    caminho = fichas_mod.resolver_ficha(referencia)
-    if caminho is None:
-        await _responder(
-            update,
-            "Ficha nao encontrada.\n\n" + _lista_fichas_txt(),
-        )
+    if args:
+        await _ligar_ficha(update, user, " ".join(args))
         return
-    dados = fichas_mod.carregar(caminho)
-    ligar_ficha(user.id, caminho.stem, user)
-    nome = dados.get("nome") or caminho.stem
-    await _responder(update, f"Ficha ligada: {nome} ({caminho.stem}.json)")
+
+    carregado = _carregar_ficha_do_usuario(user.id)
+    if isinstance(carregado, str):
+        await _responder(update, carregado)
+        return
+    dados, _caminho = carregado
+    await _responder(
+        update,
+        fichas_mod.formatar_ficha(dados),
+        parse_mode=ParseMode.HTML,
+    )
 
 
 async def cmd_macula(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -124,19 +156,30 @@ async def cmd_macula(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
     dados, caminho = carregado
     status = fichas_mod.garantir_status(dados)
-    status["maculas"] = int(status.get("maculas") or 0) + 1
+    status["humanidade"]["manchas"] = int(status["humanidade"].get("manchas") or 0) + 1
     fichas_mod.salvar(caminho, dados)
     nome = dados.get("nome") or caminho.stem
+    hum = status["humanidade"]
     await _responder(
         update,
-        f"┈─┼ ㅤMacula: {nome}\n"
-        f"▏ᅟᅟ   • Maculas de Humanidade: {status['maculas']}",
+        f"┈─┼ ㅤMácula: {nome}\n"
+        f"▏ᅟᅟ   • Humanidade: {hum['total']}\n"
+        f"▏ᅟ       • Manchas: {hum['manchas']}",
     )
 
 
-async def cmd_vontade(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def _aplicar_trilha(
+    update: Update,
+    chave: str,
+    titulo: str,
+    tipo: str | None,
+    uso: str,
+) -> None:
     user = update.effective_user
     if user is None:
+        return
+    if tipo is None:
+        await _responder(update, uso)
         return
     carregado = _carregar_ficha_do_usuario(user.id)
     if isinstance(carregado, str):
@@ -144,40 +187,65 @@ async def cmd_vontade(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
     dados, caminho = carregado
     status = fichas_mod.garantir_status(dados)
-    maximo = int(status.get("forca_de_vontade") or 0)
-    manchas = int(status.get("manchas_vontade") or 0)
-    if maximo <= 0:
-        await _responder(update, "Esta ficha nao tem Forca de Vontade definida.")
+    trilha = status[chave]
+    total = int(trilha.get("total") or 0)
+    if total <= 0:
+        await _responder(update, f"Esta ficha nao tem {titulo} definida.")
         return
-    if manchas >= maximo:
+    agrav_antes = int(trilha.get("dano_agravado") or 0)
+    if tipo == "agravado" and agrav_antes >= total:
         await _responder(
             update,
-            formatar_vontade(
+            fichas_mod.formatar_dano(
                 str(dados.get("nome") or caminho.stem),
-                manchas,
-                maximo,
-                "Forca de Vontade ja esta cheia de manchas.",
+                titulo,
+                trilha,
+                "Trilha já esta cheia de dano agravado. Vai morrer, zé.",
             ),
         )
         return
-    manchas += 1
-    status["manchas_vontade"] = manchas
+    fichas_mod.aplicar_dano(trilha, tipo, 1)
     fichas_mod.salvar(caminho, dados)
     await _responder(
         update,
-        formatar_vontade(
+        fichas_mod.formatar_dano(
             str(dados.get("nome") or caminho.stem),
-            manchas,
-            maximo,
-            "Mancha adicionada.",
+            titulo,
+            trilha,
+            f"Dano {tipo} aplicado.",
         ),
+    )
+
+
+async def cmd_vida(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await _aplicar_trilha(
+        update,
+        "vida",
+        "Vida",
+        _tipo_dano(context.args or []),
+        "Uso: /vida superficial\nou /vida agravado",
+    )
+
+
+async def cmd_vontade(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await _aplicar_trilha(
+        update,
+        "forca_de_vontade",
+        "Força de Vontade",
+        _tipo_dano(context.args or []),
+        "Uso: /vontade superficial\nou /vontade agravado",
     )
 
 
 async def cmd_remover(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     args = [a.lower() for a in (context.args or [])]
-    if args != ["vontade"]:
-        await _responder(update, "Uso: /remover vontade")
+    if not args or args[0] != "vontade":
+        await _responder(
+            update,
+            "Uso: /remover vontade\n"
+            "Tambem: /remover vontade superficial\n"
+            "ou /remover vontade agravado",
+        )
         return
     await cmd_remover_vontade(update, context)
 
@@ -192,16 +260,31 @@ async def cmd_remover_vontade(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
     dados, caminho = carregado
     status = fichas_mod.garantir_status(dados)
-    maximo = int(status.get("forca_de_vontade") or 0)
-    status["manchas_vontade"] = 0
+    trilha = status["forca_de_vontade"]
+    args = [a.lower() for a in (context.args or [])]
+    if args and args[0] == "vontade":
+        args = args[1:]
+    tipo = _tipo_dano(args) if args else None
+
+    if tipo == "superficial":
+        trilha["dano_superficial"] = 0
+        acao = "Dano superficial de Força de Vontade apagado."
+    elif tipo == "agravado":
+        trilha["dano_agravado"] = 0
+        acao = "Dano agravado de Força de Vontade apagado."
+    else:
+        trilha["dano_superficial"] = 0
+        trilha["dano_agravado"] = 0
+        acao = "Dano de Força de Vontade apagado."
+
     fichas_mod.salvar(caminho, dados)
     await _responder(
         update,
-        formatar_vontade(
+        fichas_mod.formatar_dano(
             str(dados.get("nome") or caminho.stem),
-            0,
-            maximo,
-            "Manchas de Forca de Vontade apagadas.",
+            "Força de Vontade",
+            trilha,
+            acao,
         ),
     )
 
@@ -213,14 +296,14 @@ async def roll_remorso(update: Update, user_id: int) -> None:
         return
     dados, caminho = carregado
     status = fichas_mod.garantir_status(dados)
-    humanidade = int(status.get("humanidade") or 0)
-    maculas = int(status.get("maculas") or 0)
+    humanidade = int(status["humanidade"].get("total") or 0)
+    maculas = int(status["humanidade"].get("manchas") or 0)
     nome = str(dados.get("nome") or caminho.stem)
 
     if maculas < 1:
         await _responder(
             update,
-            f"{nome} nao tem maculas. Use /macula antes do teste de remorso.",
+            f"{nome} não tem manchas de Humanidade. Use /macula antes do teste de remorso.",
         )
         return
 
@@ -228,8 +311,8 @@ async def roll_remorso(update: Update, user_id: int) -> None:
     dice, successes = roll_simple(pool)
     manteve = successes >= 1
     if not manteve:
-        status["humanidade"] = max(0, humanidade - 1)
-    status["maculas"] = 0
+        status["humanidade"]["total"] = max(0, humanidade - 1)
+    status["humanidade"]["manchas"] = 0
     fichas_mod.salvar(caminho, dados)
 
     await _responder(
@@ -240,7 +323,7 @@ async def roll_remorso(update: Update, user_id: int) -> None:
             dice=dice,
             successes=successes,
             humanidade_antes=humanidade,
-            humanidade_depois=int(status["humanidade"]),
+            humanidade_depois=int(status["humanidade"]["total"]),
             maculas_antes=maculas,
             manteve=manteve,
         ),
@@ -292,10 +375,10 @@ async def roll(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await roll_check(update, user.id)
         return
 
-    if len(args) != 2:
+    if len(args) != 1:
         await update.message.reply_text(
             "Uso:\n"
-            "/roll <parada> <fome>\n"
+            "/roll <parada>\n"
             "/roll remorso\n"
             "/roll check"
         )
@@ -303,11 +386,10 @@ async def roll(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     try:
         pool = int(args[0])
-        hunger = int(args[1])
     except ValueError:
         await update.message.reply_text(
-            "Os dois argumentos precisam ser numeros inteiros.\n"
-            "Exemplo: /roll 6 2"
+            "A parada de dados precisa ser um numero inteiro.\n"
+            "Exemplo: /roll 6"
         )
         return
 
@@ -315,14 +397,17 @@ async def roll(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("A parada de dados precisa ser pelo menos 1.")
         return
     if pool > 50:
-        await update.message.reply_text("Parada maxima permitida: 50 dados.")
+        await update.message.reply_text("Parada máxima permitida: 50 dados.")
         return
-    if hunger < HUNGER_MIN or hunger > HUNGER_MAX:
-        await update.message.reply_text(
-            f"O nivel de Fome deve estar entre {HUNGER_MIN} e {HUNGER_MAX}."
-        )
+    if user is None:
         return
 
+    carregado = _carregar_ficha_do_usuario(user.id)
+    if isinstance(carregado, str):
+        await _responder(update, carregado)
+        return
+    dados, _caminho = carregado
+    hunger = int(fichas_mod.garantir_status(dados)["fome"] or 0)
     result = roll_pool(pool, hunger)
     await update.message.reply_text(result.format_message())
 
@@ -344,6 +429,7 @@ def main() -> None:
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("ficha", cmd_ficha))
     app.add_handler(CommandHandler("macula", cmd_macula))
+    app.add_handler(CommandHandler("vida", cmd_vida))
     app.add_handler(CommandHandler("vontade", cmd_vontade))
     app.add_handler(CommandHandler("remover", cmd_remover))
     app.add_handler(CommandHandler("remover_vontade", cmd_remover_vontade))

@@ -1,0 +1,58 @@
+Comandos do bot - Vampire: The Masquerade 5a Edicao
+
+/start
+Mostra a lista resumida de comandos.
+
+/help
+Mostra a mesma ajuda do /start.
+
+/ficha
+Mostra a ficha ligada ao ID de Telegram de quem enviou o comando.
+
+/ficha ligar <nome>
+Liga uma ficha da pasta fichas ao ID de quem enviou o comando.
+Exemplo: /ficha ligar aurik
+Atalho: /ficha <nome>
+
+/roll <parada> <fome>
+Rola a parada de d10s. O segundo numero e o nivel de Fome (0 a 5).
+Exemplo: /roll 6 2
+Nao informa se a acao passou da dificuldade (isso e do mestre).
+Mostra sucessos e, se ocorrer, critico baguncado ou falha bestial.
+
+/roll remorso
+Teste de remorso na ficha ligada.
+Parada: 10 - Humanidade - manchas (minimo 1 dado).
+Precisa ter pelo menos 1 mancha de Humanidade (/macula).
+Sucesso: mantem Humanidade e apaga as manchas.
+Falha: perde 1 Humanidade e apaga as manchas.
+
+/roll check
+Tambem aceita: /roll rouse
+Rouse Check (1d10) na ficha ligada.
+6 a 10: Fome nao sobe.
+1 a 5: Fome sobe 1 (maximo 5).
+Se a Fome ja estava em 5 e falhar: risco de Frenesi de Fome.
+
+/macula
+Adiciona 1 mancha de Humanidade na ficha ligada.
+
+/vida superficial
+Aplica 1 dano superficial na Vida. Se a trilha ja estiver cheia, dano extra vira agravado.
+
+/vida agravado
+Aplica 1 dano agravado na Vida. Se nao houver caixa vazia, converte 1 dano superficial em agravado.
+
+/vontade superficial
+Aplica 1 dano superficial na Forca de Vontade. Se a trilha ja estiver cheia, dano extra vira agravado.
+
+/vontade agravado
+Aplica 1 dano agravado na Forca de Vontade. Se nao houver caixa vazia, converte 1 dano superficial em agravado.
+
+/remover vontade
+Apaga todo o dano (superficial e agravado) da Forca de Vontade.
+/remover vontade superficial
+Apaga so o dano superficial da Forca de Vontade.
+/remover vontade agravado
+Apaga so o dano agravado da Forca de Vontade.
+Atalho: /remover_vontade

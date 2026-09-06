@@ -83,9 +83,9 @@ def formatar_remorso(
 ) -> str:
     dados_txt = ", ".join(str(d) for d in dice) if dice else "(nenhum)"
     if manteve:
-        resultado = "Humanidade mantida. Maculas apagadas."
+        resultado = "Humanidade mantida. Máculas apagadas."
     else:
-        resultado = "Humanidade -1. Maculas apagadas."
+        resultado = "Humanidade -1. Máculas apagadas."
     return "\n".join(
         [
             f"┈─┼ ㅤRᥱmorso: {nome}",
@@ -110,7 +110,7 @@ def formatar_rouse(
     if passou:
         resultado = "Rouse check bem-sucedido. Fome inalterada."
     elif fome_antes >= HUNGER_MAX:
-        resultado = "Rouse check falhou. Fome ja estava em 5. Risco de Frenesi de Fome."
+        resultado = "Rouse check falhou. Rode um teste para RESISTIR AO FRENESI."
     else:
         resultado = f"Rouse check falhou. Fome {fome_antes} -> {fome_depois}."
     return "\n".join(
@@ -121,16 +121,6 @@ def formatar_rouse(
             "",
             "✷ ᅟRᥱsᥙᥣtᥲdo:",
             resultado,
-        ]
-    )
-
-
-def formatar_vontade(nome: str, manchas: int, maximo: int, acao: str) -> str:
-    return "\n".join(
-        [
-            f"┈─┼ ㅤForca de Vontade: {nome}",
-            f"▏ᅟᅟ   • {acao}",
-            f"▏ᅟ       • Manchas: {manchas} / {maximo}",
         ]
     )
 
